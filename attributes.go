@@ -65,8 +65,8 @@ func (attr *MetadataAttribute) Bytes() []byte {
 }
 
 // Version returns the metadata version of this instance
-func (attr *MetadataAttribute) Version() []byte {
-	return attr.field(versionField)
+func (attr *MetadataAttribute) Version() byte {
+	return attr.field(versionField)[0]
 }
 
 // SigningDate returns the time at which this instance was signed

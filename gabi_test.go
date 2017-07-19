@@ -352,7 +352,7 @@ func TestMetadataAttribute(t *testing.T) {
 	testAttributes1[0] = NewMetadataAttribute().Int
 	cred := issueCredential(t)
 	metadata := MetadataAttribute{cred.Attributes[1]}
-	if metadata.Version()[0] != 0x02 {
+	if metadata.Version() != 0x02 {
 		t.Errorf("Unexpected metadata version: %d", metadata.Version())
 	}
 
@@ -364,6 +364,27 @@ func TestMetadataAttribute(t *testing.T) {
 	if metadata.KeyCounter() != 0 {
 		t.Errorf("Unexpected key counter")
 	}
+}
+
+func TestMetadataCompatibility(t *testing.T) {
+	err := MetaStore.ParseFolder("testdata/irma_configuration")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// An actual metadata attribute of an IRMA credential extracted from the IRMA app
+	attr := MetadataFromInt(s2big("49043481832371145193140299771658227036446546573739245068"))
+	assert.NotNil(t, attr.CredentialType(), "attr.CredentialType() should not be nil")
+
+	assert.Equal(t,
+		"irma-demo.RU.studentCard",
+		attr.CredentialType().Identifier(),
+		"Metadata credential type was not irma-demo.RU.studentCard",
+	)
+	assert.Equal(t, byte(0x02), attr.Version(), "Unexpected metadata version")
+	assert.Equal(t, time.Unix(1499904000, 0), attr.SigningDate(), "Unexpected signing date")
+	assert.Equal(t, time.Unix(1516233600, 0), attr.Expiry(), "Unexpected expiry date")
+	assert.Equal(t, 2, attr.KeyCounter(), "Unexpected key counter")
 }
 
 func TestShowingProof(t *testing.T) {
@@ -675,7 +696,6 @@ func TestParseStore(t *testing.T) {
 		"irma-demo.RU.studentCard had improper hash")
 	assert.Contains(t, MetaStore.reverseHashes, "CLjnADMBYlFcuGOT7Z0xRg==",
 		"irma-demo.MijnOverheid.root had improper hash")
-	//
 }
 
 // TODO: tests to add:
