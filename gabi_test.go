@@ -9,6 +9,8 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -650,6 +652,24 @@ func TestWronglyBoundIssuanceAndShowingWithDifferentIssuers(t *testing.T) {
 	if commitMsg.Proofs.Verify([]*PublicKey{issuer1.Pk, issuer2.Pk}, context, nonce1, true) {
 		t.Error("Proofs in commit message verify, whereas they should not!")
 	}
+}
+
+func TestParseStore(t *testing.T) {
+	err := MetaStore.ParseFolder("testdata/irma_configuration")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.NotNil(t, MetaStore.Issuers["irma-demo.RU"].CurrentPublicKey().N, "irma-demo.RU public key has no modulus")
+	assert.Equal(t, MetaStore.SchemeManagers["irma-demo"].HRName, "Irma Demo", "irma-demo scheme manager has unexpected name")
+	assert.Equal(t,
+		"Radboud Universiteit Nijmegen",
+		MetaStore.Issuers["irma-demo.RU"].HRName,
+		"irma-demo.RU issuer has unexpected name")
+	assert.Equal(t,
+		"Student Card",
+		MetaStore.Credentials["irma-demo.RU.studentCard"].HRShortName,
+		"irma-demo.RU.studentCard has unexpected name")
 }
 
 // TODO: tests to add:
