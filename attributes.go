@@ -33,7 +33,7 @@ type MetadataField struct {
 
 // MetadataAttribute represent a metadata attribute. Contains th credential type, signing date, validity, and the public key counter.
 type MetadataAttribute struct {
-	*big.Int
+	Int *big.Int
 }
 
 // MetadataFromInt wraps the given Int
@@ -152,7 +152,7 @@ func (attr *MetadataAttribute) setField(field MetadataField, value []byte) {
 		}
 	}
 
-	attr.SetBytes(bytes)
+	attr.Int.SetBytes(bytes)
 }
 
 func shortToByte(x int) []byte {
