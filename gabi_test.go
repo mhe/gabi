@@ -322,7 +322,7 @@ func TestSignatureMessage(t *testing.T) {
 	}
 }
 
-func TestFullIssuance(t *testing.T) {
+func issueCredential(t *testing.T) *Credential {
 	context, _ := randomBigInt(testPubK.Params.Lh)
 	nonce1, _ := randomBigInt(testPubK.Params.Lstatzk)
 	secret, _ := randomBigInt(testPubK.Params.Lm)
@@ -335,7 +335,33 @@ func TestFullIssuance(t *testing.T) {
 	if err != nil {
 		t.Error("Error in IssueSignature:", err)
 	}
-	b.ConstructCredential(msg, testAttributes1)
+	cred, err := b.ConstructCredential(msg, testAttributes1)
+	if err != nil {
+		t.Error("Error in IssueSignature:", err)
+	}
+	return cred
+}
+
+func TestFullIssuance(t *testing.T) {
+	issueCredential(t)
+}
+
+func TestMetadataAttribute(t *testing.T) {
+	testAttributes1[0] = NewMetadataAttribute().Int
+	cred := issueCredential(t)
+	metadata := MetadataAttribute{cred.Attributes[1]}
+	if metadata.Version()[0] != 0x02 {
+		t.Errorf("Unexpected metadata version: %d", metadata.Version())
+	}
+
+	expiry := metadata.SigningDate().Unix() + int64(metadata.ValidityDuration()*ExpiryFactor)
+	if !time.Unix(expiry, 0).Equal(metadata.Expiry()) {
+		t.Errorf("Invalid signing date")
+	}
+
+	if metadata.KeyCounter() != 0 {
+		t.Errorf("Unexpected key counter")
+	}
 }
 
 func TestShowingProof(t *testing.T) {
@@ -343,7 +369,7 @@ func TestShowingProof(t *testing.T) {
 	if err != nil {
 		t.Error("Error producing CL signature.")
 	}
-	cred := &Credential{Pk: testPubK, Attributes: testAttributes1, Signature: signature}
+	cred := NewCredential(testPubK, signature, testAttributes1)
 	disclosed := []int{1, 2}
 
 	context, _ := randomBigInt(testPubK.Params.Lh)

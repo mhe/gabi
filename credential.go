@@ -13,6 +13,15 @@ type Credential struct {
 	Signature  *CLSignature
 	Pk         *PublicKey
 	Attributes []*big.Int
+
+	*MetadataAttribute
+}
+
+// NewCredential constructs a new credential out of its cryptographic ingredients:
+// the issuer public key, the signature and the attributes.
+func NewCredential(pk *PublicKey, sig *CLSignature, attrs []*big.Int) (cred *Credential) {
+	cred = &Credential{Pk: pk, Signature: sig, Attributes: attrs, MetadataAttribute: MetadataFromInt(attrs[1])}
+	return
 }
 
 // DisclosureProofBuilder is an object that holds the state for the protocol to

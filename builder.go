@@ -89,7 +89,7 @@ func (b *CredentialBuilder) ConstructCredential(msg *IssueSignatureMessage, attr
 	if !signature.Verify(b.pk, exponents) {
 		return nil, ErrIncorrectAttributeSignature
 	}
-	return &Credential{Pk: b.pk, Signature: signature, Attributes: exponents}, nil
+	return NewCredential(b.pk, signature, exponents), nil
 }
 
 // intHashSha256 is a utility function compute the sha256 hash over a byte array
