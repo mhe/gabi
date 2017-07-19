@@ -65,10 +65,10 @@ func (b *CredentialBuilder) CreateIssueCommitmentMessage(proofs ProofList) *Issu
 var (
 	// ErrIncorrectProofOfSignatureCorrectness is issued when the the proof of
 	// correctness on the signature does not verify.
-	ErrIncorrectProofOfSignatureCorrectness = errors.New("Proof of correctness on signature does not verify.")
+	ErrIncorrectProofOfSignatureCorrectness = errors.New("proof of correctness on signature does not verify")
 	// ErrIncorrectAttributeSignature is issued when the signature on the
 	// attributes is not correct.
-	ErrIncorrectAttributeSignature = errors.New("The Signature on the attributes is not correct.")
+	ErrIncorrectAttributeSignature = errors.New("the Signature on the attributes is not correct")
 )
 
 // ConstructCredential creates a credential using the IssueSignatureMessage from

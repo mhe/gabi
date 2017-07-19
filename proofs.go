@@ -170,7 +170,7 @@ func (p *ProofD) Verify(pk *PublicKey, context, nonce1 *big.Int) bool {
 	return p.VerifyWithChallenge(pk, createChallenge(context, nonce1, p.ChallengeContribution(pk)))
 }
 
-// Verify verifies the proof against the given public key and the provided
+// VerifyWithChallenge verifies the proof against the given public key and the provided
 // reconstruted challenge.
 func (p *ProofD) VerifyWithChallenge(pk *PublicKey, reconstructedChallenge *big.Int) bool {
 	return p.correctResponseSizes(pk) && p.c.Cmp(reconstructedChallenge) == 0
