@@ -670,6 +670,12 @@ func TestParseStore(t *testing.T) {
 		"Student Card",
 		MetaStore.Credentials["irma-demo.RU.studentCard"].HRShortName,
 		"irma-demo.RU.studentCard has unexpected name")
+
+	assert.Contains(t, MetaStore.reverseHashes, "1stqlPad5edpfS1Na1U+DA==",
+		"irma-demo.RU.studentCard had improper hash")
+	assert.Contains(t, MetaStore.reverseHashes, "CLjnADMBYlFcuGOT7Z0xRg==",
+		"irma-demo.MijnOverheid.root had improper hash")
+	//
 }
 
 // TODO: tests to add:

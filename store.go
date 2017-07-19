@@ -1,6 +1,8 @@
 package gabi
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/xml"
 	"io/ioutil"
 	"os"
@@ -9,12 +11,7 @@ import (
 )
 
 // MetaStore is the global instance of ConfigurationStore
-var MetaStore = ConfigurationStore{
-	make(map[string]*SchemeManager),
-	make(map[string]*Issuer),
-	make(map[string]*CredentialType),
-	make(map[string][]*PublicKey),
-}
+var MetaStore = newConfigurationStore()
 
 // ConfigurationStore keeps track of scheme managers, issuers, credential types and public keys.
 // Use the global MetaStore instance.
@@ -23,6 +20,28 @@ type ConfigurationStore struct {
 	Issuers        map[string]*Issuer
 	Credentials    map[string]*CredentialType
 	PublicKeys     map[string][]*PublicKey
+
+	reverseHashes map[string]string
+}
+
+func newConfigurationStore() (store *ConfigurationStore) {
+	store = &ConfigurationStore{
+		make(map[string]*SchemeManager),
+		make(map[string]*Issuer),
+		make(map[string]*CredentialType),
+		make(map[string][]*PublicKey),
+		make(map[string]string),
+	}
+	return
+}
+
+func (store *ConfigurationStore) addReverseHash(credid string) {
+	hash := sha256.Sum256([]byte(credid))
+	store.reverseHashes[base64.StdEncoding.EncodeToString(hash[:16])] = credid
+}
+
+func (store *ConfigurationStore) hashToCredentialType(hash []byte) *CredentialType {
+	return store.Credentials[store.reverseHashes[base64.StdEncoding.EncodeToString(hash)]]
 }
 
 // ParseFolder populates the current store by parsing the specified irma_configuration folder,
@@ -83,7 +102,9 @@ func (store *ConfigurationStore) parseCredentialsFolder(path string) error {
 			return err
 		}
 		if exists {
-			store.Credentials[cred.Identifier()] = cred
+			credid := cred.Identifier()
+			store.Credentials[credid] = cred
+			store.addReverseHash(credid)
 		}
 		return nil
 	})

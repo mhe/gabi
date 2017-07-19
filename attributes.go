@@ -99,6 +99,12 @@ func (attr *MetadataAttribute) setValidityDuration(weeks int) {
 	attr.setField(validityField, shortToByte(weeks))
 }
 
+// CredentialType returns the credential type of the current instance
+// using the MetaStore.
+func (attr *MetadataAttribute) CredentialType() *CredentialType {
+	return MetaStore.hashToCredentialType(attr.field(credentialID))
+}
+
 func (attr *MetadataAttribute) setCredentialIdentifier(id string) {
 	bytes := sha256.Sum256([]byte(id))
 	attr.setField(credentialID, bytes[:16])
