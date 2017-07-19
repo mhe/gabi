@@ -9,23 +9,23 @@ import (
 	"math/big"
 )
 
-// Issuer holds the key material for a credential issuer.
-type Issuer struct {
+// CredentialIssuer holds the key material for a credential issuer.
+type CredentialIssuer struct {
 	Sk      *PrivateKey
 	Pk      *PublicKey
 	Context *big.Int
 }
 
-// NewIssuer creates a new credential issuer.
-func NewIssuer(sk *PrivateKey, pk *PublicKey, context *big.Int) *Issuer {
-	return &Issuer{Sk: sk, Pk: pk, Context: context}
+// NewCredentialIssuer creates a new credential issuer.
+func NewCredentialIssuer(sk *PrivateKey, pk *PublicKey, context *big.Int) *CredentialIssuer {
+	return &CredentialIssuer{Sk: sk, Pk: pk, Context: context}
 }
 
 // IssueSignature produces an IssueSignatureMessage for the attributes based on
 // the IssueCommitmentMessage provided. Note that this function DOES NOT check
 // the proofs containted in the IssueCommitmentMessage! That needs to be done at
 // a higher level!
-func (i *Issuer) IssueSignature(msg *IssueCommitmentMessage, attributes []*big.Int, nonce1 *big.Int) (*IssueSignatureMessage, error) {
+func (i *CredentialIssuer) IssueSignature(msg *IssueCommitmentMessage, attributes []*big.Int, nonce1 *big.Int) (*IssueSignatureMessage, error) {
 
 	signature, err := i.signCommitmentAndAttributes(msg.U, attributes)
 	if err != nil {
@@ -40,7 +40,7 @@ func (i *Issuer) IssueSignature(msg *IssueCommitmentMessage, attributes []*big.I
 // and the attributes. The signature by itself does not verify because the
 // commitment contains a blinding factor that needs to be taken into account
 // when verifying the signature.
-func (i *Issuer) signCommitmentAndAttributes(U *big.Int, attributes []*big.Int) (*CLSignature, error) {
+func (i *CredentialIssuer) signCommitmentAndAttributes(U *big.Int, attributes []*big.Int) (*CLSignature, error) {
 	// Skip the first generator
 	return signMessageBlockAndCommitment(i.Sk, i.Pk, U, attributes, i.Pk.R[1:])
 }
@@ -59,7 +59,7 @@ func randomElementMultiplicativeGroup(modulus *big.Int) *big.Int {
 }
 
 // proveSignature returns a proof of knowledge of $e^{-1}$ in the signature.
-func (i *Issuer) proveSignature(signature *CLSignature, nonce2 *big.Int) *ProofS {
+func (i *CredentialIssuer) proveSignature(signature *CLSignature, nonce2 *big.Int) *ProofS {
 	Q := new(big.Int).Exp(signature.A, signature.E, i.Pk.N)
 	groupModulus := new(big.Int).Mul(i.Sk.PPrime, i.Sk.QPrime)
 	d := new(big.Int).ModInverse(signature.E, groupModulus)

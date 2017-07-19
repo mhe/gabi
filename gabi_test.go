@@ -263,7 +263,7 @@ func TestProofS(t *testing.T) {
 	// Nonce (normally from the credential recipient)
 	nonce, _ := randomBigInt(testPubK.Params.Lstatzk)
 
-	issuer := NewIssuer(testPrivK, testPubK, context)
+	issuer := NewCredentialIssuer(testPrivK, testPubK, context)
 	sig, err := issuer.signCommitmentAndAttributes(U, testAttributes1)
 	if err != nil {
 		t.Error(err)
@@ -315,7 +315,7 @@ func TestSignatureMessage(t *testing.T) {
 	b := NewCredentialBuilder(testPubK, context, secret)
 	commitMsg := b.CommitToSecretAndProve(nonce1)
 
-	issuer := NewIssuer(testPrivK, testPubK, context)
+	issuer := NewCredentialIssuer(testPrivK, testPubK, context)
 	_, err := issuer.IssueSignature(commitMsg, testAttributes1, nonce1)
 	if err != nil {
 		t.Error("Error in IssueSignature:", err)
@@ -330,7 +330,7 @@ func issueCredential(t *testing.T) *Credential {
 	b := NewCredentialBuilder(testPubK, context, secret)
 	commitMsg := b.CommitToSecretAndProve(nonce1)
 
-	issuer := NewIssuer(testPrivK, testPubK, context)
+	issuer := NewCredentialIssuer(testPrivK, testPubK, context)
 	msg, err := issuer.IssueSignature(commitMsg, testAttributes1, nonce1)
 	if err != nil {
 		t.Error("Error in IssueSignature:", err)
@@ -387,10 +387,10 @@ func TestCombinedShowingProof(t *testing.T) {
 	nonce1, _ := randomBigInt(testPubK.Params.Lstatzk)
 	secret, _ := randomBigInt(testPubK.Params.Lm)
 
-	issuer1 := NewIssuer(testPrivK1, testPubK1, context)
+	issuer1 := NewCredentialIssuer(testPrivK1, testPubK1, context)
 	cred1 := createCredential(t, context, secret, issuer1)
 
-	issuer2 := NewIssuer(testPrivK2, testPubK2, context)
+	issuer2 := NewCredentialIssuer(testPrivK2, testPubK2, context)
 	cred2 := createCredential(t, context, secret, issuer2)
 
 	prooflist := BuildProofList(DefaultSystemParameters[keylength], context, nonce1,
@@ -451,7 +451,7 @@ func TestFullIssuanceAndShowing(t *testing.T) {
 	// Issuance
 	builder := NewCredentialBuilder(testPubK, context, secret)
 	commitMsg := builder.CommitToSecretAndProve(nonce1)
-	issuer := NewIssuer(testPrivK, testPubK, context)
+	issuer := NewCredentialIssuer(testPrivK, testPubK, context)
 	sigMsg, err := issuer.IssueSignature(commitMsg, testAttributes1, nonce1)
 	if err != nil {
 		t.Error("Error in IssueSignature:", err)
@@ -481,7 +481,7 @@ func TestFullBoundIssuanceAndShowing(t *testing.T) {
 	cb1 := NewCredentialBuilder(testPubK, context, secret)
 	commitMsg := cb1.CommitToSecretAndProve(nonce1)
 
-	issuer1 := NewIssuer(testPrivK, testPubK, context)
+	issuer1 := NewCredentialIssuer(testPrivK, testPubK, context)
 	ism, err := issuer1.IssueSignature(commitMsg, testAttributes1, nonce1)
 	if err != nil {
 		t.Error("Error creating Issue Signature: ", err)
@@ -495,7 +495,7 @@ func TestFullBoundIssuanceAndShowing(t *testing.T) {
 	// Then create another credential based on the same credential with a partial
 	// disclosure of the first credential.
 	cb2 := NewCredentialBuilder(testPubK, context, secret)
-	issuer2 := NewIssuer(testPrivK, testPubK, context)
+	issuer2 := NewCredentialIssuer(testPrivK, testPubK, context)
 
 	prooflist := BuildProofList(testPubK.Params, context, nonce1, []ProofBuilder{cred1.CreateDisclosureProofBuilder([]int{1, 2}), cb2})
 
@@ -555,17 +555,17 @@ func TestGenerateKeyPair(t *testing.T) {
 	testPublicKey(t, pubk, privk)
 }
 
-func genRandomIssuer(t *testing.T, context *big.Int) *Issuer {
+func genRandomIssuer(t *testing.T, context *big.Int) *CredentialIssuer {
 	// TODO: key pair generation is slow, consider caching or providing key material
 	keylength := 1024
 	privk, pubk, err := GenerateKeyPair(DefaultSystemParameters[keylength], 6, 0, time.Now().AddDate(1, 0, 0))
 	if err != nil {
 		t.Error("Error generating key pair: ", err)
 	}
-	return NewIssuer(privk, pubk, context)
+	return NewCredentialIssuer(privk, pubk, context)
 }
 
-func createCredential(t *testing.T, context, secret *big.Int, issuer *Issuer) *Credential {
+func createCredential(t *testing.T, context, secret *big.Int, issuer *CredentialIssuer) *Credential {
 	// First create a credential
 	keylength := 1024
 	cb := NewCredentialBuilder(issuer.Pk, context, secret)
@@ -590,12 +590,12 @@ func TestFullBoundIssuanceAndShowingRandomIssuers(t *testing.T) {
 	secret, _ := randomBigInt(DefaultSystemParameters[keylength].Lm)
 
 	// First create a single credential for an issuer
-	issuer1 := NewIssuer(testPrivK1, testPubK1, context)
+	issuer1 := NewCredentialIssuer(testPrivK1, testPubK1, context)
 	cred1 := createCredential(t, context, secret, issuer1)
 
 	// Then create another credential based on the same credential with a partial
 	// disclosure of the first credential.
-	issuer2 := NewIssuer(testPrivK2, testPubK2, context)
+	issuer2 := NewCredentialIssuer(testPrivK2, testPubK2, context)
 	cb2 := NewCredentialBuilder(issuer2.Pk, context, secret)
 
 	nonce1, _ := randomBigInt(DefaultSystemParameters[keylength].Lstatzk)
@@ -634,12 +634,12 @@ func TestWronglyBoundIssuanceAndShowingWithDifferentIssuers(t *testing.T) {
 	secret2, _ := randomBigInt(DefaultSystemParameters[keylength].Lm)
 
 	// First create a single credential for an issuer
-	issuer1 := NewIssuer(testPrivK1, testPubK1, context)
+	issuer1 := NewCredentialIssuer(testPrivK1, testPubK1, context)
 	cred1 := createCredential(t, context, secret1, issuer1)
 
 	// Then create another credential based on the same credential with a partial
 	// disclosure of the first credential.
-	issuer2 := NewIssuer(testPrivK2, testPubK2, context)
+	issuer2 := NewCredentialIssuer(testPrivK2, testPubK2, context)
 	cb2 := NewCredentialBuilder(issuer2.Pk, context, secret2)
 
 	nonce1, _ := randomBigInt(DefaultSystemParameters[keylength].Lstatzk)
