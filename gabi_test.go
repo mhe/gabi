@@ -682,15 +682,23 @@ func TestParseStore(t *testing.T) {
 	}
 
 	assert.NotNil(t, MetaStore.Issuers["irma-demo.RU"].CurrentPublicKey().N, "irma-demo.RU public key has no modulus")
-	assert.Equal(t, MetaStore.SchemeManagers["irma-demo"].HRName, "Irma Demo", "irma-demo scheme manager has unexpected name")
+	assert.Equal(t,
+		"Irma Demo",
+		MetaStore.SchemeManagers["irma-demo"].HRName.Translation("en"),
+		"irma-demo scheme manager has unexpected name")
 	assert.Equal(t,
 		"Radboud Universiteit Nijmegen",
-		MetaStore.Issuers["irma-demo.RU"].HRName,
+		MetaStore.Issuers["irma-demo.RU"].HRName.Translation("en"),
 		"irma-demo.RU issuer has unexpected name")
 	assert.Equal(t,
 		"Student Card",
-		MetaStore.Credentials["irma-demo.RU.studentCard"].HRShortName,
+		MetaStore.Credentials["irma-demo.RU.studentCard"].HRShortName.Translation("en"),
 		"irma-demo.RU.studentCard has unexpected name")
+
+	assert.Equal(t,
+		"studentID",
+		MetaStore.Credentials["irma-demo.RU.studentCard"].Attributes[2].ID,
+		"irma-demo.RU.studentCard.studentID has unexpected name")
 
 	// Hash algorithm pseudocode:
 	// Base64(SHA256("irma-demo.RU.studentCard")[0:16])
