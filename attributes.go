@@ -31,7 +31,7 @@ type MetadataField struct {
 	offset int
 }
 
-// MetadataAttribute represent a metadata attribute. Contains th credential type, signing date, validity, and the public key counter.
+// MetadataAttribute represent a metadata attribute. Contains the credential type, signing date, validity, and the public key counter.
 type MetadataAttribute struct {
 	Int *big.Int
 }
