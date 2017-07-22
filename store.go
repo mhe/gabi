@@ -35,6 +35,16 @@ func newConfigurationStore() (store *ConfigurationStore) {
 	return
 }
 
+// PublicKey returns the specified public key, or nil if not present in the ConfigurationStore.
+func (store *ConfigurationStore) PublicKey(id string, counter int) *PublicKey {
+	if list, ok := MetaStore.PublicKeys[id]; ok {
+		if len(list) > counter {
+			return list[counter]
+		}
+	}
+	return nil
+}
+
 func (store *ConfigurationStore) addReverseHash(credid string) {
 	hash := sha256.Sum256([]byte(credid))
 	store.reverseHashes[base64.StdEncoding.EncodeToString(hash[:16])] = credid

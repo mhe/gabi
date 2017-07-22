@@ -92,6 +92,11 @@ func (cd *CredentialType) Identifier() string {
 	return cd.SchemeManagerName + "." + cd.IssuerName + "." + cd.Name
 }
 
+// IssuerIdentifier returns the issuer identifier of the specified credential type.
+func (cd *CredentialType) IssuerIdentifier() string {
+	return cd.SchemeManagerName + "." + cd.IssuerName
+}
+
 // Identifier returns the identifier of the specified issuer description.
 func (id *Issuer) Identifier() string {
 	return id.SchemeManagerName + "." + id.Name

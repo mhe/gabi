@@ -64,6 +64,12 @@ func (attr *MetadataAttribute) Bytes() []byte {
 	return bytes
 }
 
+// PublicKey extracts identifier of the Idemix public key with which this instance was signed,
+// and returns this public key.
+func (attr *MetadataAttribute) PublicKey() *PublicKey {
+	return MetaStore.PublicKey(attr.CredentialType().IssuerIdentifier(), attr.KeyCounter())
+}
+
 // Version returns the metadata version of this instance
 func (attr *MetadataAttribute) Version() byte {
 	return attr.field(versionField)[0]
