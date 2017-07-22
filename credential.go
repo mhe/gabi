@@ -10,16 +10,16 @@ import (
 
 // Credential represents an Idemix credential.
 type Credential struct {
-	Signature  *CLSignature
-	Pk         *PublicKey
-	Attributes []*big.Int
+	Signature  *CLSignature `xml:"signature"`
+	Pk         *PublicKey   `xml:"-"`
+	Attributes []*big.Int   `xml:"attributes"`
 
-	*MetadataAttribute
+	*MetadataAttribute `xml:"-"`
 }
 
 // NewCredential constructs a new credential out of its cryptographic ingredients:
 // the issuer public key, the signature and the attributes.
-func NewCredential(pk *PublicKey, sig *CLSignature, attrs []*big.Int) (cred *Credential) {
+func NewCredential(attrs []*big.Int, sig *CLSignature, pk *PublicKey) (cred *Credential) {
 	cred = &Credential{Pk: pk, Signature: sig, Attributes: attrs, MetadataAttribute: MetadataFromInt(attrs[1])}
 	return
 }

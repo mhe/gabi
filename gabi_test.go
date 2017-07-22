@@ -392,7 +392,7 @@ func TestShowingProof(t *testing.T) {
 	if err != nil {
 		t.Error("Error producing CL signature.")
 	}
-	cred := NewCredential(testPubK, signature, testAttributes1)
+	cred := NewCredential(testAttributes1, signature, testPubK)
 	disclosed := []int{1, 2}
 
 	context, _ := randomBigInt(testPubK.Params.Lh)
