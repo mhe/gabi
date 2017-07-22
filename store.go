@@ -51,7 +51,11 @@ func (store *ConfigurationStore) addReverseHash(credid string) {
 }
 
 func (store *ConfigurationStore) hashToCredentialType(hash []byte) *CredentialType {
-	return store.Credentials[store.reverseHashes[base64.StdEncoding.EncodeToString(hash)]]
+	if str, exists := store.reverseHashes[base64.StdEncoding.EncodeToString(hash)]; exists {
+		return store.Credentials[str]
+	} else {
+		return nil
+	}
 }
 
 // ParseFolder populates the current store by parsing the specified irma_configuration folder,
