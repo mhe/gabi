@@ -34,6 +34,7 @@ type MetadataField struct {
 // MetadataAttribute represent a metadata attribute. Contains the credential type, signing date, validity, and the public key counter.
 type MetadataAttribute struct {
 	Int *big.Int
+	pk  *PublicKey
 }
 
 // MetadataFromInt wraps the given Int
@@ -47,7 +48,7 @@ func MetadataFromInt(i *big.Int) *MetadataAttribute {
 // 0 as keycounter
 // ValidityDefault (half a year) as default validity.
 func NewMetadataAttribute() *MetadataAttribute {
-	val := MetadataAttribute{new(big.Int)}
+	val := MetadataAttribute{new(big.Int), nil}
 	val.setField(versionField, metadataVersion)
 	val.setSigningDate()
 	val.setKeyCounter(0)
@@ -67,7 +68,10 @@ func (attr *MetadataAttribute) Bytes() []byte {
 // PublicKey extracts identifier of the Idemix public key with which this instance was signed,
 // and returns this public key.
 func (attr *MetadataAttribute) PublicKey() *PublicKey {
-	return MetaStore.PublicKey(attr.CredentialType().IssuerIdentifier(), attr.KeyCounter())
+	if attr.pk == nil {
+		attr.pk = MetaStore.PublicKey(attr.CredentialType().IssuerIdentifier(), attr.KeyCounter())
+	}
+	return attr.pk
 }
 
 // Version returns the metadata version of this instance

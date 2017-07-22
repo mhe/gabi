@@ -351,7 +351,7 @@ func TestFullIssuance(t *testing.T) {
 func TestMetadataAttribute(t *testing.T) {
 	testAttributes1[0] = NewMetadataAttribute().Int
 	cred := issueCredential(t)
-	metadata := MetadataAttribute{cred.Attributes[1]}
+	metadata := MetadataFromInt(cred.Attributes[1])
 	if metadata.Version() != 0x02 {
 		t.Errorf("Unexpected metadata version: %d", metadata.Version())
 	}
