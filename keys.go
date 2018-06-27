@@ -15,8 +15,6 @@ import (
 	"time"
 
 	"errors"
-
-	"github.com/credentials/safeprime"
 )
 
 const (
@@ -325,17 +323,7 @@ func (pubk *PublicKey) WriteToFile(filename string, forceOverwrite bool) (int64,
 
 // randomSafePrime produces a safe prime of the requested number of bits
 func randomSafePrime(bits int) (*big.Int, error) {
-	p2 := new(big.Int)
-	for {
-		p, err := rand.Prime(rand.Reader, bits)
-		if err != nil {
-			return nil, err
-		}
-		p2.Rsh(p, 1) // p2 = (p - 1)/2
-		if p2.ProbablyPrime(20) {
-			return p, nil
-		}
-	}
+	return rand.Prime(rand.Reader, bits)
 }
 
 // GenerateKeyPair generates a private/public keypair for an Issuer
@@ -343,12 +331,12 @@ func GenerateKeyPair(param *SystemParameters, numAttributes int, counter uint, e
 	primeSize := param.Ln / 2
 
 	// p and q need to be safe primes
-	p, err := safeprime.Generate(int(primeSize))
+	p, err := randomSafePrime(int(primeSize))
 	if err != nil {
 		return nil, nil, err
 	}
 
-	q, err := safeprime.Generate(int(primeSize))
+	q, err := randomSafePrime(int(primeSize))
 	if err != nil {
 		return nil, nil, err
 	}
