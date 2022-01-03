@@ -1,4 +1,11 @@
+
 [![GoDoc](https://godoc.org/github.com/mhe/gabi?status.svg)](https://godoc.org/github.com/mhe/gabi) [![Build Status](https://travis-ci.org/mhe/gabi.svg?branch=master)](https://travis-ci.org/mhe/gabi)
+
+Status
+------
+
+This version of gabi is **UNMAINTAINED**, do not use. Development has continued at the [Privacy by Design foundation](https://privacybydesign.foundation/), more specifically [here](https://github.com/privacybydesign/gabi/).
+
 Gabi
 ====
 
@@ -6,10 +13,7 @@ Gabi is a Go implementation of the [IRMA](https://www.irmacard.org) approach to 
 
 gabi itself is designed to be compatible with the existing [Java](https://github.com/credentials/credentials_idemix) and [C++](https://github.com/credentials/silvia) implementations of the IRMA system.
 
-Status
-------
 
-Do note that this library is still fairly young. As such there might be some API-changes in the near future. And although most (if not all) cryptographic primitives are present, it does need additional "field testing". In addition, since this library implements (non-trivial) cryptography it needs to be checked by many more eyeballs.
 
 Install
 -------
